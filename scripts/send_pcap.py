@@ -12,22 +12,15 @@ from scapy.utils import rdpcap
 
 NUM_PACKETS = 1 
 parser = argparse.ArgumentParser(description='run_test.py')
-parser.add_argument('--h2h1',
-		help='If set pkts are send through veth2 to veth1',
+
+parser.add_argument('--dl',
+		help='If send a UL flow of pkts through veth1 to veth2',
 		action="store_true",
-		default=False)
-parser.add_argument('-greh1',
-		help='Inf set GRE pkts are send through veth1 to veth2',
+                default=False)
+parser.add_argument('--ul',
+		help='If send a DL flow of pkts through veth1 to veth2',
 		action="store_true",
-		default=False)
-parser.add_argument('--tcp0',
-		help='If set pkts are send through veth1 to veth2',
-		action="store_true",
-		default=False)
-parser.add_argument('--tcp1',
-		help='If set pkts are send through veth1 to veth2',
-		action="store_true",
-		default=False)
+                default=False)
 args = parser.parse_args()
 
 class PacketQueue:
@@ -127,35 +120,19 @@ for p, iface in port_map.items():
 send_socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,
 		socket.htons(0x03))
 
-if args.tcp0:
-    pkt = Ether(dst='00:aa:bb:00:00:a5',src='00:55:00:00:00:00')/IP(dst='192.168.0.10',src='10.0.0.10')/TCP(sport=81, dport=1025)/"from scapy packet"
+if args.dl:
+    pcaps=rdpcap("/home/messer/workarea/myrepo/PCAP/down_link/PCAP/nfpa.trPR_bng_dl_100_random.128bytes.pcap")
     port2send = port_map[1]
-elif args.tcp1:
-    pkt = Ether(dst='00:aa:bb:00:00:a5',src='00:55:00:00:00:00')/IP(dst='192.168.0.1',src='192.168.0.10')/TCP(sport=81, dport=1025)/"from scapy packet"
-    port2send = port_map[2]
+elif args.ul:
+    #pcaps=rdpcap("nfpa.trPR_bng_ul_100_random.128bytes.pcap")
+    pcaps=rdpcap("/home/messer/workarea/myrepo/PCAP/upload_link/PCAP/nfpa.trPR_bng_ul_100_random.128bytes.pcap")
+    port2send = port_map[1]
 
-elif args.h2h1:
-    pkt = Ether(dst='00:aa:bb:00:00:a5',src='00:55:00:00:00:00')/IP(dst='192.168.0.1',src='192.168.0.10')/TCP(sport=81, dport=102)/"from scapy packet"
-    port2send = port_map[1]
-elif args.greh1:
-    pkt = Ether(dst='aa:1b:eb:df:44:3d',src='00:44:00:00:00:00')/IP(dst='4.0.0.11',src='4.0.0.10')/GRE()/IP(dst='192.168.0.10',src='10.0.0.10')/TCP(sport=20, dport=80)/"GRE packet"
-
-    #pkt = Ether(dst='aa:1b:eb:df:44:3d',src='00:44:00:00:00:00')/IP(dst='4.0.0.11',src='4.0.0.10')/GRE()/IP(dst='10.0.0.1',src='10.0.0.10')/TCP(sport=81, dport=1025)/"GRE packet"
-    port2send = port_map[1]
 else:
-#    pkt = Ether(dst='a0:36:9f:3e:94:e8',src='a0:36:9f:3e:94:ea')/IP(dst='192.168.0.1',src='192.168.1.1')
-    #pkt = Ether(dst='a0:36:9f:3e:94:e8',src='a0:36:9f:3e:94:ea')/IP(dst='192.168.0.1',src='192.168.1.1')/ICMP()/"Hello World"
-    #pkt = Ether(dst='00:44:00:00:00:00',src='00:aa:bb:00:00:00')/IP(dst='10.0.1.10',src='10.0.0.10')/ICMP()/"Hello World"
-    #pkt = Ether(dst='aa:1b:eb:df:44:3d',src='00:44:00:00:00:00')/IP(dst='10.0.1.10',src='10.0.0.10')/ICMP()/"Hello World"
-    pkt = Ether(dst='00:aa:bb:00:00:04',src='00:44:00:00:00:00')/IP(dst='192.168.0.10',src='10.0.0.10')/TCP(sport=20, dport=80)/"from scapy packet"
-
-    #pkt = Ether(dst='aa:1b:eb:df:44:3d',src='00:44:00:00:00:00')/IP(dst='10.0.0.10',src='10.0.0.3')/GRE()/IP(dst='192.168.0.2',src='192.168.0.3')/"Hello World"
     port2send = port_map[1]
 
 send_socket.bind((port2send, 0))
 
-#pcaps=rdpcap("nfpa.trPR_bng_ul_100_random.128bytes.pcap")
-pcaps=rdpcap("nfpa.trPR_bng_dl_100_random.64bytes.pcap")
 print "number of packets"+ str(len(pcaps))
 NUM_PACKETS = len(pcaps)
 
