@@ -134,7 +134,7 @@ for i in range(0, 7):
 	  #Create trace file
 	  if f == 0:
               FILE = "echo " + macsrc_h[p] + " " + '10.0.0.'+str(p+1)+ " " + '192.168.0.'+str(p+1)  +  " " +str(r[index])+" 1 >> PCAP/trace_trPR_bng_ul" + str(entries) + "_random.txt"
-	  #os.system(FILE)
+	  os.system(FILE)
 
 
 	#pname = "./PCAP/nfpa.trPR_ipv4_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4) #Update the name depending of the Use-Case, use the same format
