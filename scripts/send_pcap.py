@@ -10,6 +10,8 @@ from scapy.all import sniff
 from scapy.all import Ether, IP, IPv6, TCP, ICMP, GRE
 from scapy.utils import rdpcap
 
+repo_dir='/home/messer/workarea/myrepo/PCAP/'
+
 NUM_PACKETS = 1 
 parser = argparse.ArgumentParser(description='run_test.py')
 
@@ -121,11 +123,11 @@ send_socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,
 		socket.htons(0x03))
 
 if args.dl:
-    pcaps=rdpcap("/home/messer/workarea/myrepo/PCAP/down_link/PCAP/nfpa.trPR_bng_dl_100_random.128bytes.pcap")
+    pcaps=rdpcap(repo_dir+"down_link/PCAP/nfpa.trPR_bng_dl_100_random.128bytes.pcap")
     port2send = port_map[1]
 elif args.ul:
     #pcaps=rdpcap("nfpa.trPR_bng_ul_100_random.128bytes.pcap")
-    pcaps=rdpcap("/home/messer/workarea/myrepo/PCAP/upload_link/PCAP/nfpa.trPR_bng_ul_100_random.128bytes.pcap")
+    pcaps=rdpcap(repo_dir+"upload_link/PCAP/nfpa.trPR_bng_ul_100_random.128bytes.pcap")
     port2send = port_map[1]
 
 else:
