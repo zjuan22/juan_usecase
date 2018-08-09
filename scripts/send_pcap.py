@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import random
-import argparse
+import random, argparse
 import socket
 import threading
 import socket
@@ -10,8 +9,8 @@ from scapy.all import sniff
 from scapy.all import Ether, IP, IPv6, TCP, ICMP, GRE
 from scapy.utils import rdpcap
 
-#repo_dir='/home/messer/workarea/myrepo/PCAP/'
-repo_dir='/root/Juan/myrepo/PCAP/'
+repo_dir='/home/lion/workspace/myrepo/PCAP/'
+#repo_dir='/root/Juan/myrepo/PCAP/'
 
 NUM_PACKETS = 1 
 parser = argparse.ArgumentParser(description='run_test.py')
@@ -129,8 +128,8 @@ if args.dl:
     port2send = port_map[1]
 elif args.ul:
     #pcaps=rdpcap("nfpa.trPR_bng_ul_100_random.128bytes.pcap")
-    #pcaps=rdpcap(repo_dir+"upload_link/PCAP/nfpa.trPR_bng_ul_100_random.128bytes.pcap")
-    pcaps=rdpcap("/root/Juan/general/comsoc_pcap_up/nfpa.trPR_gre_100_random.128bytes.pcap")
+    pcaps=rdpcap(repo_dir+"upload_link/pcap_19290/nfpa.trPR_bng_ul_100_19290.82bytes.pcap")
+    #pcaps=rdpcap("/root/Juan/general/comsoc_pcap_up/nfpa.trPR_gre_100_random.128bytes.pcap")
     
     port2send = port_map[1]
 

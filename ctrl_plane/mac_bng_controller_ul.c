@@ -13,6 +13,8 @@ uint8_t portmap[MAX_MACS];
 uint8_t ips[MAX_MACS][4];
 uint8_t ipd[MAX_MACS][4];
 int mac_count = -1;
+uint8_t stcp_txt[MAX_MACS][2];
+uint8_t ips_new[MAX_MACS][4];
 
 int read_macs_and_ports_from_file(char *filename) {
 	FILE *f;
@@ -21,7 +23,7 @@ int read_macs_and_ports_from_file(char *filename) {
 	int values_ip[4];
 	int values_ip2[4];
 	int i;
-	int tcp;
+	int stcp;
 	int port;
 
 	f = fopen(filename, "r");
@@ -35,7 +37,7 @@ int read_macs_and_ports_from_file(char *filename) {
 					&values[3], &values[4], &values[5],
 					&values_ip[0], &values_ip[1], &values_ip[2], &values_ip[3],
 					&values_ip2[0], &values_ip2[1], &values_ip2[2], &values_ip2[3],
-                                        &tcp, &port
+                                        &stcp, &port
                 ) )
 		{
 			if (mac_count==MAX_MACS-1)
@@ -51,6 +53,15 @@ int read_macs_and_ports_from_file(char *filename) {
 				ips[mac_count][i] = (uint8_t) values_ip[i];
 			for( i = 0; i < 4; ++i )
 				ipd[mac_count][i] = (uint8_t) values_ip2[i];
+
+			stcp_txt[mac_count][1] = (uint8_t) stcp;
+			stcp_txt[mac_count][0] = 0;
+
+                        // This is for the new src IP... provisional 
+                        ips_new[mac_count][0] = (uint8_t) values_ip2[3];
+                        ips_new[mac_count][1] = (uint8_t) values_ip2[2];
+                        ips_new[mac_count][2] = (uint8_t) values_ip2[1];
+                        ips_new[mac_count][3] = (uint8_t) values_ip2[0];
 
                 }else {
 			printf("Wrong format error in line %d : %s\n", mac_count+2, line);
@@ -328,7 +339,7 @@ void fill_smac(uint8_t mac[6] )
 
 }
 
-void fill_nat_up(uint8_t ip_inn[4], uint8_t ip[4], uint8_t srctcp[2])
+void fill_nat_up(uint8_t ip_inn[4], uint8_t ip[4], uint8_t srctcp)
 {
 	char buffer[2048];
 	struct p4_header* h;
@@ -370,17 +381,20 @@ void fill_nat_up(uint8_t ip_inn[4], uint8_t ip[4], uint8_t srctcp[2])
 	//for(int i = 0; i < 4; i++){ printf("%d.",ap->bitmap[i]);  }	
     //    printf("\n");
 
+	//ap2 = add_p4_action_parameter(h, a, 2048);
+	//strcpy(ap2->name, "srcPort");
+	//memcpy(ap2->bitmap, srctcp, 2);
+	//ap2->length = 2*8+0;
 
-	ap2 = add_p4_action_parameter(h, a, 2048);
-	strcpy(ap2->name, "srcPort");
-	memcpy(ap2->bitmap, srctcp, 2);
-	ap2->length = 2*8+0;
+        ap2 = add_p4_action_parameter(h, a, 2048);
+        strcpy(ap2->name, "srcPort");
+        ap2->bitmap[0] = srctcp;
+        ap2->bitmap[1] = 0;
+        ap2->length = 2*8+0;
 
       //  printf("%s ->", ap2->name);
 	//for(int i = 0; i < 2 ; i++){printf("%d.",ap2->bitmap[i]);  }	
 	//printf("\n");
-
-
 
 	netconv_p4_header(h);
         netconv_p4_add_table_entry(te);
@@ -388,8 +402,6 @@ void fill_nat_up(uint8_t ip_inn[4], uint8_t ip[4], uint8_t srctcp[2])
 	netconv_p4_action(a);
 	netconv_p4_action_parameter(ap);
 	netconv_p4_action_parameter(ap2);
-
-
 
 	send_p4_msg(c, buffer, 2048);
 
@@ -820,12 +832,12 @@ void init() {
         for (i=0;i<=mac_count;++i)
         {
 
-                printf("Filling tables smac/decap/nat_up/lpm_up MAC: %02x:%02x:%02x:%02x:%02x:%02x src_IP: %d.%d.%d.%d dst_IP: %d.%d.%d.%   d\n ", macs[i][0],macs[i][1],macs[i][2],macs[i][3],macs[i][4],macs[i][5], ips[i][0],ips[i][1],ips[i][2],ips[i][3] , ipd[i][0],ipd[i][1],ipd[i][2],ipd[i][3]);
+                printf("Filling tables smac/decap/nat_up/lpm_up MAC: %02x:%02x:%02x:%02x:%02x:%02x src_IP: %d.%d.%d.%d dst_IP: %d.%d.%d.%d srcTCP:%d  d\n ", macs[i][0],macs[i][1],macs[i][2],macs[i][3],macs[i][4],macs[i][5], ips[i][0],ips[i][1],ips[i][2],ips[i][3] , ipd[i][0],ipd[i][1],ipd[i][2],ipd[i][3]), stcp_txt[i][1];
 
 
                fill_smac(macs[i]);  // esta smac del paquete
                fill_decap(macs[i], tn_id0);
-               fill_nat_up(ips[i],ip2,stcp); //
+               fill_nat_up(ips[i],ips_new[i],stcp_txt[i][1]); //
                fill_ipv4_lpm_up(ipd[i],port1 , ipd[i]);
 
                if(0 == (i%100)){ printf("inside sleep \n");sleep(1);;}

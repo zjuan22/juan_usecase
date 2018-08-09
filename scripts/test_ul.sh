@@ -9,7 +9,8 @@ pwd=`pwd`
 echo $pwd
 cd ..
 #cd src/hardware_dep/shared/ctrl_plane
-TS=/root/Juan/myrepo/
+#TS=/root/Juan/myrepo/
+TS=/home/lion/workspace/myrepo
 cd $TS/ctrl_plane 
 
 #gcc -Wall -pthread -std=c99  handlers.c controller.c messages.c sock_helpers.c threadpool.c fifo.c mac_l3_controller_ipv6.c -o $pwd/mac_l3_controller_ipv6
@@ -50,7 +51,7 @@ pkill -f nat_controller_ul
  
 
 #./old_mk/mac_bng_controller_ul $TS/PCAP/upload_link/PCAP/trace_trPR_bng_ul100_random.txt & 
-./old_mk/mac_bng_controller_ul $TS/PCAP/upload_link/pcap_161720/trace_trPR_bng_ul100_161720.txt & 
+./old_mk/mac_bng_controller_ul $TS/PCAP/upload_link/pcap_19290/trace_trPR_bng_ul_100_19290.txt & 
 
 echo "Controller started... "
 

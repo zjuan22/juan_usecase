@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-import os
-import string
-import sys
-import random
+import os,sys,string,random
 from random import shuffle
 import argparse
 from random import randint
@@ -48,23 +45,11 @@ i = 0
 for i in range(1,254):
     r.append(i)
 shuffle(r)
-u = []
-i = 0
-for i in range(65535):
-    u.append(i)
-shuffle(u)
-v = []
-i = 0
-for i in range(65535):
-    v.append(i)
-shuffle(v)
 l = 0
 macsrc_c = ""
 macdst_c = ""
 macsrc_hex = ""
 macdst_hex = ""
-macsrc_hex2 = ""
-macdst_hex2 = ""
 ipsrc_c = ""
 ipdst_c = ""
 for m in range(entries):
@@ -72,8 +57,6 @@ for m in range(entries):
 	macdst_c = "f0:76:1c:"
 	macsrc_hex = "0xf0:0x76:0x1c:"
 	macdst_hex = "0xf0:0x76:0x1c:"
-	macsrc_hex2 = "f0:76:1c:"
-	macdst_hex2 = "f0:76:1c:"
 	l = 0
 	n = 0
 	for i in range(6):
@@ -140,15 +123,16 @@ for i in range(0, 7):
     p = 0
     for p in range(0, entries):
         
-       index = randint(1,250)
+       ip_src_outter0 = randint(1,250)
+       ip_src_outter1 = randint(1,250)
        index0 = randint(1,250)
        index1 = randint(1,250)
        index2 = randint(1,250)
        index3 = randint(1,250)
        ip_src = str(index0)+'.'+str(index1)+'.'+str(index2)+'.'+str(index3)
-       if p > 255: sys.exit(1)
+       if p > 100000: sys.exit(1)
        pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/
-       IP(dst='4.0.0.1',src='4.0.0.'+str(p+1))/
+       IP(dst='4.0.0.1',src='4.0.'+str(ip_src_outter1)+'.'+str(ip_src_outter0))/
        GRE()/
        IP(dst=ipdst[p] ,src=ipsrc[p])/
        TCP(sport=20, dport=80)/Raw(RandString(size=pktsize[i])))
@@ -156,12 +140,9 @@ for i in range(0, 7):
        if i==0: 
           #Create trace file
           #FILE = "echo " + macsrc_h[p] + " " + '10.0.0.'+str(p+1)+ " " + '192.168.0.'+str(p+1)  +  " " +str(r[index])+" 1 >> PCAP/trace_trPR_bng_ul" + str(entries) + "_random.txt"
-          FILE = "echo " + macsrc_h[p] + " " + str(ipsrc[p])+ " " + str(ipdst[p])  +  " " +str(r[index])+" 1 >> "+create_dir+"/trace_trPR_bng_ul" + str(entries) + "_"+data_t+".txt"
+          FILE = "echo " + macsrc_h[p] + " " + str(ipsrc[p])+ " " + str(ipdst[p])  +  " " +str(r[index0])+" 1 >> "+create_dir+"/trace_trPR_bng_ul_" + str(entries) + "_"+data_t+".txt"
           os.system(FILE)
 
-    #pname = "./PCAP/nfpa.trPR_ipv4_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4) #Update the name depending of the Use-Case, use the same format
-    #pname = "./PCAP/nfpa.trPR_bng_ul_%d_random.%dbytes.pcap" % (entries, pktsize[i]+78+4) #Update the name depending of the Use-Case, use the same format
-    #pname = "./"+create_dir+"/nfpa.trPR_bng_ul_%d_random.%dbytes.pcap" % (entries, pktsize[i]+78+4) #Update the name depending of the Use-Case, use the same format
     pname = "./"+create_dir+"/nfpa.trPR_bng_ul_%d_%s.%dbytes.pcap" % (entries,data_t, pktsize[i]+78+4) #Update the name depending of the Use-Case, use the same format
     #pnamec = "PCAP/nfpa.trPR_gre_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4)
     #pnamec = "PCAP/nfpa.trPR_gre_%d_random.%dbytes.pcap" % (entries, pktsize[i]+78+4)
