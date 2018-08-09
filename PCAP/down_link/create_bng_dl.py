@@ -9,6 +9,10 @@ import argparse
 from random import randint
 
 from scapy.all import *
+from datetime import datetime                                                   
+now = datetime.now()
+
+
 
 #Parse the number of entries
 parser = argparse.ArgumentParser(description='IPv4 PCAP generator.')
@@ -125,6 +129,13 @@ for m in range(entries):
 # print macdst_h
 # print ipdst
 # print ipsrc
+
+data_t= str(now.hour)+""+str(now.minute)+""+str(now.second)                     
+print now.minute                                                                
+create_dir="pcap_"+data_t                                                       
+os.system("mkdir "+ create_dir)                                                 
+#IP(dst='192.168.0.'+str(p+1),src='10.0.0.'+str(p+1))/  
+
 #########
 i = 0
 print "entries : "+ str(entries)
@@ -138,14 +149,17 @@ for i in range(0, 7):
         #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src='00:44:00:00:00:00')/IP(dst='4.0.0.11',src='4.0.0.10')/GRE()/IP(dst='192.168.0.10',src='10.0.0.    10')/TCP(sport=20, dport=80)/Raw(RandString(size=pktsize[i])))
         #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='4.0.0.1',src='4.0.0.10')/GRE()/IP(dst=ipdst[p],src=ipsrc[p])/TCP(sport=20, dport=80)/Raw(RandString(size=pktsize[i])))
         #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='192.168.0.1',src='192.168.0.'+str(p+1))/TCP(sport=20, dport=str(p+100) )/Raw(RandString(size=pktsize[i])))
-        pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='192.168.0.1',src='192.168.0.'+str(p+1))/TCP(sport=20, dport=(p+100) )/Raw(RandString(size=pktsize[i])))
+        #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='192.168.0.1',src='192.168.0.'+str(p+1))/TCP(sport=20, dport=(p+100) )/Raw(RandString(size=pktsize[i])))
+        pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst=ipdst[p],src='192.168.0.'+str(p+1))/TCP(sport=20, dport=(p+100) )/Raw(RandString(size=pktsize[i])))
 
         if f == 0:
            if ip_count < 50: ip_count += 1  	
            else: ip_count = 0 		     
            #FILE = "echo " + str(ipdst[p]) + " " + macdst_h[p] + " 1 >> PCAP/trace_trPR_ipv4_" + str(entries) + "_random.txt"  
            #FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1) +" 4.0.0."+str(p+102)+" "+str(p+100)+ " 10.0.0."+str(ip_block[ip_count]) + " 1 >> PCAP/trace_trPR_nat_dl_" + str(entries) + "_random2.txt"  
-           FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1) +" 4.0.0."+str(p+102)+ " " +str(p+100)+ " 1 >> PCAP/trace_trPR_bng_dl_" + str(entries) + "_random2.txt"  
+           #FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1) +" 4.0.0."+str(p+102)+ " " +str(p+100)+ " 1 >> PCAP/trace_trPR_bng_dl_" + str(entries) + "_random2.txt"  
+           #FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1)+" " + ipsrc+ " " +str(p+100)+ " 1 >> PCAP/trace_trPR_bng_dl_" + str(entries) + "_random2.txt"  
+           FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1)+" " + str(ipsrc[p])+ " " +str(p+100)+ " 1 >> "+create_dir +"/trace_trPR_bng_dl_" + str(entries) + "_"+data_t +".txt"  
            os.system(FILE)
 
 		  #FILE2 = "echo " + macsrc[p] + " 0 >> PCAP/trace_trPR_l2_" + str(entries) + "_random.txt"
@@ -153,7 +167,7 @@ for i in range(0, 7):
 		  #FILE2 = "echo " + macdst[p] + " 1 >> PCAP/trace_trPR_l2_" + str(entries) + "_random.txt"
 		  #os.system(FILE2)
 	#pname = "./PCAP/nfpa.trPR_ipv4_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4) #Update the name depending of the Use-Case, use the same format
-	pname = "./PCAP/nfpa.trPR_bng_dl_%d_random.%dbytes.pcap" % (entries, pktsize[i]+54+4) #Update the name depending of the Use-Case, use the same format
+	pname = "./" + create_dir+"/nfpa.trPR_bng_dl_%d_%s.%dbytes.pcap" % (entries,data_t, pktsize[i]+54+4) #Update the name depending of the Use-Case, use the same format
     #pnamec = "PCAP/nfpa.trPR_gre_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4)
     #pnamec = "PCAP/nfpa.trPR_tcp_%d_random.%dbytes.pcap" % (entries, pktsize[i]+78+4)  #14 (eth) + 20 (ip4) + 20 (tcp) = 54
     #copy = "scp " + pnamec + " macsad@10.1.1.29:/home/macsad/nfpa/PCAP"
