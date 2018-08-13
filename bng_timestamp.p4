@@ -88,10 +88,8 @@ struct routing_metadata_t {
     bit<32> meter_tag;
 
 
-    bit<16> srcPort_udp;                                                            
-    bit<16> dstPort_udp;                                                            
-    bit<16> length_udp;                                                            
-    bit<16> checksum_udp; 
+    bit<64> ts_tx_n;                                                            
+    bit<64> ts_rx_n;                                                            
 
 }
 
@@ -204,10 +202,8 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     /*action set_if_info(bit<32> ipv4_addr, bit<48> mac_addr, bit<1> is_ext) { */
     @name(".set_if_info") action set_if_info(bit<1> is_ext) {
         
-        /*meta.routing_metadata.srcPort_udp =  hdr.udp.srcPort ;
-        meta.routing_metadata.dstPort_udp =  hdr.udp.dstPort ;
-        meta.routing_metadata.length_udp  =  hdr.udp.length_  ;
-        meta.routing_metadata.checksum_udp=  hdr.udp.checksum; */
+        meta.routing_metadata.ts_tx_n =  hdr.ts.ts_tx ;
+        meta.routing_metadata.ts_rx_n =  hdr.ts.ts_rx ;
 
         meta.routing_metadata.if_ipv4_addr = 0x7fef4800 ;
         meta.routing_metadata.if_mac_addr = 0x010101010100;
@@ -433,9 +429,13 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
       hdr.ts_new.setInvalid(); 
         hdr.ts_new.setValid();
-        hdr.ts_new.ts_rx  = 64w0x1111111111111111  ;
-        hdr.ts_new.ts_tx  = 64w0x2222222222222222  ;
+        /*hdr.ts_new.ts_rx  = 64w0x1111111111111111  ;
+          hdr.ts_new.ts_tx  = 64w0x2222222222222222  ; */
 
+
+        hdr.ts_new.ts_rx  = meta.routing_metadata.ts_rx_n;
+        hdr.ts_new.ts_tx  = meta.routing_metadata.ts_tx_n;
+ 
     } 
 
     @name(".sendout") table sendout {
