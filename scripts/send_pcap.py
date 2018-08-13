@@ -128,7 +128,10 @@ if args.dl:
     port2send = port_map[1]
 elif args.ul:
     #pcaps=rdpcap("nfpa.trPR_bng_ul_100_random.128bytes.pcap")
-    pcaps=rdpcap(repo_dir+"upload_link/pcap_19290/nfpa.trPR_bng_ul_100_19290.82bytes.pcap")
+    #pcaps=rdpcap(repo_dir+"upload_link/pcap_19290/nfpa.trPR_bng_ul_100_19290.82bytes.pcap")
+    #pcaps=rdpcap(repo_dir+"upload_link/pcap_155313/nfpa.trPR_bng_ul_100_155313.128bytes.pcap")
+    #pcaps=rdpcap(repo_dir+"upload_link/pcap_bng_up_173645/nfpa.trPR_bng_ul_10_173645.128bytes.pcap")
+    pcaps=rdpcap(repo_dir+"upload_link/pcap_bng_up_19154/nfpa.trPR_bng_ul_10_19154.128bytes.pcap")
     #pcaps=rdpcap("/root/Juan/general/comsoc_pcap_up/nfpa.trPR_gre_100_random.128bytes.pcap")
     
     port2send = port_map[1]

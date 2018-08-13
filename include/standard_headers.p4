@@ -88,6 +88,12 @@ header udp_h {
     bit<16> checksum;
 }
 
+
+header ts_i {
+    bit<64> ts_rx;
+    bit<64> ts_tx;
+}
+
 header sctp_h {
     bit<16> srcPort;
     bit<16> dstPort;

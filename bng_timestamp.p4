@@ -16,6 +16,8 @@ const bit<8>  ARP_PLEN_IPV4      = 4;
 
 
 struct headers {
+    ts_i         ts;
+    ts_i         ts_new;
     udp_h        udp;  
     udp_h        udp_decap;  
     ethernet_t   ethernet;
@@ -107,10 +109,10 @@ struct metadata {
 parser ParserImpl(packet_in packet, out headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
     @name(".start") state start {
         /*transition parse_ethernet;*/
-        transition parse_udp;
+        transition parse_ts;
     }
-    @name("parse_udp") state parse_udp {
-        packet.extract(hdr.udp);
+    @name("parse_ts") state parse_ts {
+        packet.extract(hdr.ts);
         transition parse_ethernet;
     }
     @name ("parse_ethernet") state parse_ethernet {
@@ -202,10 +204,10 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     /*action set_if_info(bit<32> ipv4_addr, bit<48> mac_addr, bit<1> is_ext) { */
     @name(".set_if_info") action set_if_info(bit<1> is_ext) {
         
-        meta.routing_metadata.srcPort_udp =  hdr.udp.srcPort ;
+        /*meta.routing_metadata.srcPort_udp =  hdr.udp.srcPort ;
         meta.routing_metadata.dstPort_udp =  hdr.udp.dstPort ;
         meta.routing_metadata.length_udp  =  hdr.udp.length_  ;
-        meta.routing_metadata.checksum_udp=  hdr.udp.checksum;
+        meta.routing_metadata.checksum_udp=  hdr.udp.checksum; */
 
         meta.routing_metadata.if_ipv4_addr = 0x7fef4800 ;
         meta.routing_metadata.if_mac_addr = 0x010101010100;
@@ -421,12 +423,18 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
            hdr.ethernet_decap.srcAddr =  src_mac;
            hdr.ethernet_decap.etherType = 16w0x800;
    
-       hdr.udp.setInvalid(); 
-        hdr.udp_decap.setValid();
+       hdr.ts.setInvalid(); 
+        /*hdr.udp_decap.setValid();
         hdr.udp_decap.srcPort  = meta.routing_metadata.srcPort_udp  ;
         hdr.udp_decap.dstPort  = meta.routing_metadata.dstPort_udp  ;
         hdr.udp_decap.length_   = meta.routing_metadata.length_udp   ;
-        hdr.udp_decap.checksum = meta.routing_metadata.checksum_udp ;
+        hdr.udp_decap.checksum = meta.routing_metadata.checksum_udp ;*/
+       
+
+      hdr.ts_new.setInvalid(); 
+        hdr.ts_new.setValid();
+        hdr.ts_new.ts_rx  = 64w0x1111111111111111  ;
+        hdr.ts_new.ts_tx  = 64w0x2222222222222222  ;
 
     } 
 
