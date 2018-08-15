@@ -427,7 +427,6 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         hdr.udp_decap.checksum = meta.routing_metadata.checksum_udp ;*/
        
 
-      hdr.ts_new.setInvalid(); 
         hdr.ts_new.setValid();
         /*hdr.ts_new.ts_rx  = 64w0x1111111111111111  ;
           hdr.ts_new.ts_tx  = 64w0x2222222222222222  ; */
