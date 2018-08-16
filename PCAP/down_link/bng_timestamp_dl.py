@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-import os, string, sys
+import os
+import string
+import sys
 import random
 from random import shuffle
 import argparse
@@ -30,7 +32,7 @@ macsrc_h = []
 macdst_h = []
 #pktsize = [18, 82, 210, 466, 978, 1234, 1472] #Don't update the pktsizes original
 #pktsize = [0 ,46, 174,430 ,942, 1198, 1436] #Don't update the pktsizes
-pktsize = [6, 70, 198, 454, 966, 1222, 1460] #Don't update the pktsizes
+pktsize = [0, 54, 182, 438, 950, 1206, 1444] #Don't update the pktsizes
 
 #The next code generates random IPv6 and MAC address
 #########
@@ -110,7 +112,7 @@ for m in range(entries):
 
 data_t= str(now.hour)+""+str(now.minute)+""+str(now.second)                     
 print now.minute                                                                
-create_dir="pcap_bng_dl_"+str(entries)+"_"+data_t 
+create_dir="pcap_bng_dl_ts_"+str(entries)+"_"+data_t 
 os.system("mkdir "+ create_dir)                                                 
 #IP(dst='192.168.0.'+str(p+1),src='10.0.0.'+str(p+1))/  
 
@@ -129,7 +131,13 @@ for i in range(0, 7):
         #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='4.0.0.1',src='4.0.0.10')/GRE()/IP(dst=ipdst[p],src=ipsrc[p])/TCP(sport=20, dport=80)/Raw(RandString(size=pktsize[i])))
         #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='192.168.0.1',src='192.168.0.'+str(p+1))/TCP(sport=20, dport=str(p+100) )/Raw(RandString(size=pktsize[i])))
         #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='192.168.0.1',src='192.168.0.'+str(p+1))/TCP(sport=20, dport=(p+100) )/Raw(RandString(size=pktsize[i])))
-        pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst=ipdst[p],src='192.168.0.'+str(p+1))/TCP(sport=20, dport=(p+100) )/Raw(RandString(size=pktsize[i])))
+        pkts.append(
+          UDP(dport=1230, sport=1129)/
+          UDP(dport=1230, sport=1129)/
+          Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/
+          IP(dst=ipdst[p],src='192.168.0.'+str(p+1))/
+          TCP(sport=20, dport=(p+100) )/
+          Raw(RandString(size=pktsize[i])))
 
         if f == 0:
            if ip_count < 50: ip_count += 1  	
@@ -146,7 +154,7 @@ for i in range(0, 7):
 		  #FILE2 = "echo " + macdst[p] + " 1 >> PCAP/trace_trPR_l2_" + str(entries) + "_random.txt"
 		  #os.system(FILE2)
 	#pname = "./PCAP/nfpa.trPR_ipv4_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4) #Update the name depending of the Use-Case, use the same format
-	pname = "./" + create_dir+"/nfpa.trPR_bng_dl_%d_%s.%dbytes.pcap" % (entries,data_t, pktsize[i]+54+4) #Update the name depending of the Use-Case, use the same format
+	pname = "./" + create_dir+"/nfpa.trPR_bng_dl_%d_%s.%dbytes.pcap" % (entries,data_t, pktsize[i]+70+4) #Update the name depending of the Use-Case, use the same format
     #pnamec = "PCAP/nfpa.trPR_gre_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4)
     #pnamec = "PCAP/nfpa.trPR_tcp_%d_random.%dbytes.pcap" % (entries, pktsize[i]+78+4)  #14 (eth) + 20 (ip4) + 20 (tcp) = 54
     #copy = "scp " + pnamec + " macsad@10.1.1.29:/home/macsad/nfpa/PCAP"
