@@ -86,10 +86,13 @@ for m in range(entries):
 	macsrc.append(macsrc_c)
 	macdst_h.append(macdst_hex)
 	macsrc_h.append(macsrc_hex)
+
+tcp_dest = []
 for m in range(entries):
 	l = 0
 	ipsrc_c = ""
 	ipdst_c = ""
+        
 	for i in range(4):
 		if l == 1:
 			ipdst_c = ipdst_c + "." + str(r[0])
@@ -100,6 +103,7 @@ for m in range(entries):
 			ipsrc_c = ipsrc_c + str(r[1])
 		l = l + 1
 		shuffle(r)
+        tcp_dest.append(str(r[2]))
 	ipdst.append(ipdst_c)
 	ipsrc.append(ipsrc_c)
 
@@ -124,45 +128,28 @@ for i in range(0, 7):
     p = 0
     ip_count = 0
     for p in range(0, entries):
-        index2 = randint(1,entries)
-        ip_block = range(1,50)
-        
-        #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src='00:44:00:00:00:00')/IP(dst='4.0.0.11',src='4.0.0.10')/GRE()/IP(dst='192.168.0.10',src='10.0.0.    10')/TCP(sport=20, dport=80)/Raw(RandString(size=pktsize[i])))
-        #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='4.0.0.1',src='4.0.0.10')/GRE()/IP(dst=ipdst[p],src=ipsrc[p])/TCP(sport=20, dport=80)/Raw(RandString(size=pktsize[i])))
-        #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='192.168.0.1',src='192.168.0.'+str(p+1))/TCP(sport=20, dport=str(p+100) )/Raw(RandString(size=pktsize[i])))
-        #pkts.append(Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/IP(dst='192.168.0.1',src='192.168.0.'+str(p+1))/TCP(sport=20, dport=(p+100) )/Raw(RandString(size=pktsize[i])))
-        pkts.append(
-          UDP(dport=1230, sport=1129)/
-          UDP(dport=1230, sport=1129)/
-          Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/
-          IP(dst=ipdst[p],src='192.168.0.'+str(p+1))/
-          TCP(sport=20, dport=(p+100) )/
-          Raw(RandString(size=pktsize[i])))
-
-        if f == 0:
-           if ip_count < 50: ip_count += 1  	
-           else: ip_count = 0 		     
-           #FILE = "echo " + str(ipdst[p]) + " " + macdst_h[p] + " 1 >> PCAP/trace_trPR_ipv4_" + str(entries) + "_random.txt"  
-           #FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1) +" 4.0.0."+str(p+102)+" "+str(p+100)+ " 10.0.0."+str(ip_block[ip_count]) + " 1 >> PCAP/trace_trPR_nat_dl_" + str(entries) + "_random2.txt"  
-           #FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1) +" 4.0.0."+str(p+102)+ " " +str(p+100)+ " 1 >> PCAP/trace_trPR_bng_dl_" + str(entries) + "_random2.txt"  
-           #FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1)+" " + ipsrc+ " " +str(p+100)+ " 1 >> PCAP/trace_trPR_bng_dl_" + str(entries) + "_random2.txt"  
-           FILE = "echo "+str(macsrc[p])+" 10.0.0."+str(p+1)+" " + str(ipsrc[p])+ " " +str(p+100)+ " 1 >> "+create_dir +"/trace_trPR_bng_dl_" + str(entries) + "_"+data_t +".txt"  
+       if i == 0:
+           ip_src0 = randint(1,250)
+           ip_src1 = randint(1,250)
+           ip_dst0 = randint(1,250)
+           ip_dst1 = randint(1,250)
+           #if (entries < 100):
+           #    tcp_dst = randint(1,100)
+           #else:
+           #    tcp_dst = randint(1,250)
+           FILE = "echo "+str(macsrc[p])+" 10.0."+str(ip_dst0)+"."+str(ip_dst1)+" " + str(ipsrc[p])+ " " +str(tcp_dest[p])+ " 1 >> "+create_dir +"/trace_trPR_bng_dl_" + str(entries) + "_"+data_t +".txt"  
            os.system(FILE)
-
-		  #FILE2 = "echo " + macsrc[p] + " 0 >> PCAP/trace_trPR_l2_" + str(entries) + "_random.txt"
-		  #os.system(FILE2)
-		  #FILE2 = "echo " + macdst[p] + " 1 >> PCAP/trace_trPR_l2_" + str(entries) + "_random.txt"
-		  #os.system(FILE2)
-	#pname = "./PCAP/nfpa.trPR_ipv4_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4) #Update the name depending of the Use-Case, use the same format
-	pname = "./" + create_dir+"/nfpa.trPR_bng_dl_%d_%s.%dbytes.pcap" % (entries,data_t, pktsize[i]+70+4) #Update the name depending of the Use-Case, use the same format
-    #pnamec = "PCAP/nfpa.trPR_gre_%d_random.%dbytes.pcap" % (entries, pktsize[i]+42+4)
+            
+       pkts.append(
+       UDP(dport=1230, sport=1129)/
+       UDP(dport=1230, sport=1129)/
+       Ether(dst='aa:1b:eb:df:44:3d',src=macsrc[p])/
+       IP(dst=ipdst[p],src='192.168.'+str(ip_src1) +'.'+str(ip_src0))/
+       TCP(sport=20, dport=int(tcp_dest[p]) )/
+       Raw(RandString(size=pktsize[i])))
+    pname = "./" + create_dir+"/nfpa.trPR_bng_dl_%d_%s.%dbytes.pcap" % (entries,data_t, pktsize[i]+70+4) #Update the name depending of the Use-Case, use the same format
     #pnamec = "PCAP/nfpa.trPR_tcp_%d_random.%dbytes.pcap" % (entries, pktsize[i]+78+4)  #14 (eth) + 20 (ip4) + 20 (tcp) = 54
     #copy = "scp " + pnamec + " macsad@10.1.1.29:/home/macsad/nfpa/PCAP"
     wrpcap(pname,pkts)
-    #os.system(copy)
     del pkts[:] #Don't delete this line
-    f = 1
-#copy = "scp PCAP/trace_trPR_l2_" + str(entries) + "_random.txt" + " root@10.1.1.27:/root/Fabricio/mac_ipv6_gyn/traces/"
-#os.system(copy)
-#copy = "scp PCAP/trace_trPR_ipv4_" + str(entries) + "_random.txt" + " root@10.1.1.27:/root/Fabricio/mac_ipv6_gyn/traces/"
-#os.system(copy)
+    #os.system(copy)
