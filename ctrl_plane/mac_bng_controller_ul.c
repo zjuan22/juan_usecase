@@ -840,16 +840,17 @@ void init() {
                fill_nat_up(ips[i],ips_new[i],stcp_txt[i][1]); //
                fill_ipv4_lpm_up(ipd[i],port1 , ipd[i]);
 
-               if(0 == (i%100)){ printf("inside sleep \n");sleep(1);;}
+               //if(0 == (i%100)){ printf("inside sleep \n");sleep(1);;}
+               if(0 == (i%500)){ printf("inside sleep \n");sleep(1);;}
 
 
-                usleep(10000);
+               usleep(1000);
         }
+         
+        printf ("ctrl Total entries sent %d\n",i);
 
 
-
-
-         printf("\n");
+        printf("\n");
 
  }
 
