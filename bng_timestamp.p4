@@ -341,6 +341,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
     
     /*@name(".ipv4_gre_rewrite") action ipv4_gre_rewrite(bit<32> gre_srcAddr, bit<32> gre_dstAddr) { */
     @name(".ipv4_gre_rewrite") action ipv4_gre_rewrite(bit<32> gre_dstAddr) {
+      hdr.ts.setInvalid(); 
       hdr.ethernet.setInvalid();     
       hdr.gre.setValid();
       hdr.gre.proto = 16w0x800;
@@ -378,6 +379,16 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
       standard_metadata.egress_port = 1;
       meta.routing_metadata.dst_ipv4= hdr.outer_ipv4.dstAddr;  
       meta.routing_metadata.rewrite_outer = 0;             
+
+
+
+      hdr.ts_new.setValid();
+        /*hdr.ts_new.ts_rx  = 64w0x1111111111111111  ;
+          hdr.ts_new.ts_tx  = 64w0x2222222222222222  ; */
+
+
+        hdr.ts_new.ts_rx  = meta.routing_metadata.ts_rx_n;
+        hdr.ts_new.ts_tx  = meta.routing_metadata.ts_tx_n;
        
     }
 
@@ -419,14 +430,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
            hdr.ethernet_decap.srcAddr =  src_mac;
            hdr.ethernet_decap.etherType = 16w0x800;
    
-       hdr.ts.setInvalid(); 
-        /*hdr.udp_decap.setValid();
-        hdr.udp_decap.srcPort  = meta.routing_metadata.srcPort_udp  ;
-        hdr.udp_decap.dstPort  = meta.routing_metadata.dstPort_udp  ;
-        hdr.udp_decap.length_   = meta.routing_metadata.length_udp   ;
-        hdr.udp_decap.checksum = meta.routing_metadata.checksum_udp ;*/
-       
-
+        hdr.ts.setInvalid(); 
         hdr.ts_new.setValid();
         /*hdr.ts_new.ts_rx  = 64w0x1111111111111111  ;
           hdr.ts_new.ts_tx  = 64w0x2222222222222222  ; */
