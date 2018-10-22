@@ -1,0 +1,51 @@
+digraph ingress {
+subgraph cluster {
+graph [
+label="", labeljust=r, style=bold];
+0[label=__START__, margin="", shape=rectangle, style=solid];
+1[label=__EXIT__, margin="", shape=rectangle, style=solid];
+2[label=if_info, margin="", shape=ellipse, style=solid];
+3[label=smac, margin="", shape=ellipse, style=solid];
+4[label="hdr.ipv4.protocol == 47;", margin="", shape=rectangle, style=solid];
+5[label="ingress.decap_process_outer", margin="", shape=ellipse, style=solid];
+6[label=m_table, margin="", shape=ellipse, style=solid];
+7[label=m_filter, margin="", shape=ellipse, style=solid];
+8[label=nat_up, margin="", shape=ellipse, style=solid];
+9[label=firewall_ul, margin="", shape=ellipse, style=solid];
+10[label="meta.routing_metadata.is_ext_if == 1;", margin="", shape=rectangle, style=solid];
+11[label=nat_dw, margin="", shape=ellipse, style=solid];
+12[label=firewall_dl, margin="", shape=ellipse, style=solid];
+13[label=tunnel_encap_process_outer, margin="", shape=ellipse, style=solid];
+14[label=m_table_dl, margin="", shape=ellipse, style=solid];
+15[label=m_filter_dl, margin="", shape=ellipse, style=solid];
+16[label=ipv4_up, margin="", shape=ellipse, style=solid];
+17[label="meta.routing_metadata.rewrite_outer == 1;", margin="", shape=rectangle, style=solid];
+18[label=sendout, margin="", shape=ellipse, style=solid];
+19[label="meta.routing_metadata.rewrite_outer == 0;", margin="", shape=rectangle, style=solid];
+20[label=sendout_dw, margin="", shape=ellipse, style=solid];
+0 -> 2[label=""];
+2 -> 3[label=""];
+3 -> 4[label=""];
+4 -> 5[label=TRUE];
+4 -> 10[label=FALSE];
+5 -> 6[label=""];
+6 -> 7[label=""];
+7 -> 8[label=""];
+8 -> 9[label=""];
+9 -> 10[label=""];
+10 -> 11[label=TRUE];
+10 -> 16[label=FALSE];
+11 -> 12[label=""];
+12 -> 13[label=""];
+13 -> 14[label=""];
+14 -> 15[label=""];
+15 -> 16[label=""];
+16 -> 17[label=""];
+17 -> 18[label=TRUE];
+17 -> 19[label=FALSE];
+18 -> 19[label=""];
+19 -> 20[label=TRUE];
+19 -> 1[label=FALSE];
+20 -> 1[label=""];
+}
+}
